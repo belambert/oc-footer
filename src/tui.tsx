@@ -1,4 +1,5 @@
 /** @jsxImportSource @opentui/solid */
+import type { RGBA } from "@opentui/core"
 import { createEffect, createSignal, on, Show } from "solid-js"
 
 import { fmt, GLYPH, trackPhases } from "./phase.ts"
@@ -9,7 +10,7 @@ type Msg = { content?: { type: string }[] }
 type Page = { data?: Msg[]; cursor?: { next?: string | null } }
 
 type Ctx = {
-  theme: { text: { base: unknown; muted: unknown; feedback: Record<"success" | "warning", { base: unknown }> } }
+  theme: { text: { base: RGBA; muted: RGBA; feedback: Record<"success" | "warning", { base: RGBA }> } }
   client: { message: { list: (q: Record<string, unknown>) => Promise<Page> } }
   data: { on: (type: string, fn: (e: Ev) => void) => () => void }
   ui: { slot: (claim: { append: string; render: (input: Input) => unknown }) => () => void }
@@ -83,7 +84,12 @@ export default {
 
     const phases = trackPhases(ctx.data.on)
     const offs = [
-      ...Object.entries(BUMPS).map(([type, key]) => ctx.data.on(type, tracked((id) => bump(id, key)))),
+      ...Object.entries(BUMPS).map(([type, key]) =>
+        ctx.data.on(
+          type,
+          tracked((id) => bump(id, key)),
+        ),
+      ),
       ...RESYNC.map((type) => ctx.data.on(type, tracked(schedule))),
     ]
 
