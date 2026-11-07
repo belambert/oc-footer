@@ -35,8 +35,8 @@ const RESYNC = [
 ]
 
 const ROWS: [keyof Counts, string, string][] = [
-  ["turns", "↑", "Turns"],
-  ["steps", "⟳", "Steps"],
+  ["turns", "⏎", "Turns"],
+  ["steps", "↻", "Steps"],
   ["tools", "⚒", "Tools"],
   ["thoughts", "✦", "Thoughts"],
 ]
@@ -130,8 +130,8 @@ export default {
                   </text>
                   {ROWS.map(([key, sym, name]) => (
                     <box flexDirection="row" justifyContent="space-between">
-                      <text fg={ctx.theme.text.muted}>{`${sym} ${name}`}</text>
-                      <text fg={ctx.theme.text.muted}>{String(s()[key])}</text>
+                      <text fg={ctx.theme.text.muted}>{name}</text>
+                      <text fg={ctx.theme.text.muted}>{`${s()[key]} ${sym}`}</text>
                     </box>
                   ))}
                 </box>
