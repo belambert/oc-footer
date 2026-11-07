@@ -17,14 +17,14 @@ A turn with two tool calls followed by a reply is three steps.
 While a run is active, a live indicator with elapsed time appears before the
 counts:
 
-    ✦ 4.2s  3↑ 6⟳ 3⚒ 6✦
+    4.2s ✦  3↑ 6⟳ 3⚒ 6✦
 
 | Indicator     | Phase                                                |
 |---------------|------------------------------------------------------|
-| `◌ 1.2s`      | Waiting for the model (request sent, no output yet)  |
-| `✦ 4.2s`      | Thinking (streaming reasoning)                       |
-| `✎ 0.8s`      | Writing (streaming reply text)                       |
-| `⚒ read 2.1s` | Calling or running a tool                            |
+| `1.2s ◌`      | Waiting for the model (request sent, no output yet)  |
+| `4.2s ✦`      | Thinking (streaming reasoning)                       |
+| `0.8s ✎`      | Writing (streaming reply text)                       |
+| `read 2.1s ⚒` | Calling or running a tool                            |
 
 It's hidden when the session is idle and during retry backoff.
 

@@ -105,12 +105,13 @@ export default {
             <box flexDirection="row" flexShrink={0} gap={2}>
               <Show when={phase()}>
                 {(p) => (
+                  // glyph last: the footer is right-anchored, so it stays put as the text grows
                   <text wrapMode="none">
+                    <span style={{ fg: ctx.theme.text.muted }}>
+                      {`${p().tool ? `${p().tool} ` : ""}${fmt(p().elapsed)} `}
+                    </span>
                     <span style={{ fg: p().kind === "wait" ? feedback.warning.base : feedback.success.base }}>
                       {GLYPH[p().kind]}
-                    </span>
-                    <span style={{ fg: ctx.theme.text.muted }}>
-                      {` ${p().tool ? `${p().tool} ` : ""}${fmt(p().elapsed)}`}
                     </span>
                   </text>
                 )}
