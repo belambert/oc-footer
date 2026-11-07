@@ -66,15 +66,14 @@ would load twice.
 
 ## Releasing
 
-Bump `version` in `package.json`, merge it to `main`, then push a matching
-tag:
+Bump `version` in `package.json`, merge it to `main`, then publish a GitHub
+release with a matching `v` tag, on GitHub or with:
 
-    git tag v0.1.1
-    git push origin v0.1.1
+    gh release create v0.1.2 --generate-notes
 
-The `publish` workflow builds `dist/` and publishes to npm through trusted
-publishing, so no npm token is stored in the repo. It fails if the tag doesn't
-match the package version.
+Publishing the release runs the `publish` workflow, which builds `dist/` and
+publishes to npm through trusted publishing, so no npm token is stored in the
+repo. It fails if the tag doesn't match the package version.
 
 ## How It Works
 
