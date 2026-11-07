@@ -4,7 +4,12 @@ An OpenCode v2 TUI plugin that shows what the model is doing right now in the
 prompt footer, and the current session's activity counts in the sidebar.
 
 While a run is active, the footer shows the current phase and how long it has
-lasted:
+lasted, just before OpenCode's context size:
+
+<img src="docs/footer.png" width="771" alt="The footer through one run: waiting, thinking, running a read tool, writing, then idle, each with the context size">
+
+*The footer through one run: waiting, thinking, running a tool, writing, and
+idle.*
 
 | Indicator     | Phase                                                |
 |---------------|------------------------------------------------------|
@@ -15,9 +20,10 @@ lasted:
 
 It's hidden when the session is idle and during retry backoff.
 
-When the sidebar is open, it gets an "Activity" section with the counts:
+When the sidebar is open, it gets an "Activity" section with the counts, below
+OpenCode's "Context" section:
 
-<img src="docs/sidebar.png" width="389" alt="Sidebar Activity section listing turns, steps, tools, and thoughts">
+<img src="docs/sidebar.png" width="403" alt="Sidebar Context section followed by the Activity section listing turns, steps, tools, and thoughts">
 
 | Symbol | Count    | Meaning                                         |
 |--------|----------|-------------------------------------------------|
@@ -28,7 +34,7 @@ When the sidebar is open, it gets an "Activity" section with the counts:
 
 A turn with two tool calls followed by a reply is three steps.
 
-The screenshot is a tmux capture rendered to PNG; glyph shapes depend on your
+Screenshots are tmux captures rendered to PNG; glyph shapes depend on your
 terminal font.
 
 ## Install
