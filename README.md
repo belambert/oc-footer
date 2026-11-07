@@ -10,7 +10,7 @@ idle.*
 
 | Symbol | Count    | Meaning                                         |
 |--------|----------|-------------------------------------------------|
-| `↑`    | Turns    | Your messges                                    |
+| `↑`    | Turns    | Your messages                                   |
 | `⟳`    | Steps    | Model calls                                     |
 | `⚒`    | Tools    | Tool calls made by the model                    |
 | `✦`    | Thoughts | Reasoning blocks                                |
