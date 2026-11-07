@@ -1,7 +1,7 @@
 {
-  "name": "oc-footer",
+  "name": "opencode-activity",
   "version": "0.1.0",
-  "description": "OpenCode v2 TUI plugin that shows the session's turn and step counts in the prompt footer.",
+  "description": "OpenCode v2 TUI plugin that shows session activity counts and a live phase indicator in the footer and sidebar.",
   "type": "module",
   "license": "MIT"
 }
