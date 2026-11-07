@@ -39,19 +39,27 @@ counts, labeled:
 
 ## Install
 
-OpenCode v2 discovers local TUI plugins as directories (or symlinks to
-directories) under a `plugins` folder. Link this repo globally:
+Add the repo's absolute path to the `plugins` array in
+`~/.config/opencode/opencode.json`:
 
-    mkdir -p ~/.config/opencode/plugins
-    ln -s "$PWD" ~/.config/opencode/plugins/oc-footer
+```json
+{
+  "plugins": ["/path/to/oc-footer"]
+}
+```
 
-Or for a single project, link it into `<project>/.opencode/plugins/` instead.
-Restart OpenCode to load it.
+Alternatively, OpenCode discovers directories (or symlinks to directories)
+under `~/.config/opencode/plugins/` or `<project>/.opencode/plugins/` without
+any config entry. Use one method, not both: the paths differ, so the plugin
+would load twice. Restart OpenCode to load it.
 
 ## How It Works
 
 - `tui.tsx` appends to the `prompt.footer.status` slot (after the built-in
   status) and the `sidebar.content` slot; both read the same shared counts.
+- `server.ts` is a no-op server entry. Plugins listed in `opencode.json` are
+  loaded by the server first, and one without a server entry never reaches
+  the TUI.
 - `phase.ts` tracks the live phase per session from step, text, reasoning,
   tool, retry, and execution events, timed from each event's `created`
   timestamp.
