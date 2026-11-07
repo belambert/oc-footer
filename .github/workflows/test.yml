@@ -16,3 +16,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun test
+      - run: bun run build
+      # the package's exports point here, so a missing file means a broken install
+      - run: test -s dist/server.js && test -s dist/tui.js

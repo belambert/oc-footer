@@ -67,7 +67,7 @@ would load twice.
 `bun run lint` checks formatting (Prettier) and types (TypeScript), and
 `bun run format` fixes formatting. `bun test` runs the unit tests in `tests/`,
 which drive the phase and count trackers with a fake event bus and message
-API. CI runs lint, test, and build on every push to `main` and on PRs.
+API. CI runs lint, and tests plus a build check, on every push to `main` and on PRs.
 
 ## Releasing
 
