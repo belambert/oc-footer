@@ -1,6 +1,8 @@
 # opencode-livetrace
 
-An OpenCode v2 TUI plugin that shows what the model is doing right now in the
+[![npm](https://img.shields.io/npm/v/opencode-livetrace)](https://www.npmjs.com/package/opencode-livetrace)
+
+An [OpenCode](https://opencode.ai) v2 TUI plugin that shows what the model is doing right now in the
 prompt footer, and the current session's activity counts in the sidebar.
 
 While a run is active, the footer shows the current phase and how long it has
