@@ -1,19 +1,22 @@
 /** @jsxImportSource @opentui/solid */
 import { createEffect, createSignal, on, Show } from "solid-js"
 
+import { fmt, GLYPH, trackPhases } from "./phase.ts"
+
 type Counts = { turns: number; steps: number; tools: number; thoughts: number }
 
 type Msg = { content?: { type: string }[] }
 type Page = { data?: Msg[]; cursor?: { next?: string | null } }
 
 type Ctx = {
-  theme: { text: { base: unknown; muted: unknown } }
+  theme: { text: { base: unknown; muted: unknown; feedback: Record<"success" | "warning", { base: unknown }> } }
   client: { message: { list: (q: Record<string, unknown>) => Promise<Page> } }
-  data: { on: (type: string, fn: (e: { data?: { sessionID?: string } }) => void) => () => void }
+  data: { on: (type: string, fn: (e: Ev) => void) => () => void }
   ui: { slot: (claim: { append: string; render: (input: Input) => unknown }) => () => void }
 }
 
 type Input = { sessionID?: string; showDetails?: boolean }
+type Ev = { created?: number; data?: { sessionID?: string; name?: string; at?: number } }
 
 // live increments while a run streams; full recounts correct any drift
 const BUMPS: Record<string, keyof Counts> = {
@@ -73,11 +76,12 @@ export default {
       setCounts((c) => ({ ...c, [id]: { ...c[id], [key]: c[id][key] + 1 } }))
 
     // only track sessions that have been displayed
-    const tracked = (fn: (id: string) => void) => (e: { data?: { sessionID?: string } }) => {
+    const tracked = (fn: (id: string) => void) => (e: Ev) => {
       const id = e.data?.sessionID
       if (id && id in counts()) fn(id)
     }
 
+    const phases = trackPhases(ctx.data.on)
     const offs = [
       ...Object.entries(BUMPS).map(([type, key]) => ctx.data.on(type, tracked((id) => bump(id, key)))),
       ...RESYNC.map((type) => ctx.data.on(type, tracked(schedule))),
@@ -94,14 +98,31 @@ export default {
         append: "prompt.footer.status",
         render: (input) => {
           const stats = watch(input)
+          const phase = () => phases.get(input.sessionID)
+          const { feedback } = ctx.theme.text
+
           return (
-            <Show when={input.showDetails !== false && stats()}>
-              {(s) => (
-                <text flexShrink={0} wrapMode="none" fg={ctx.theme.text.muted}>
-                  {ROWS.map(([key, sym]) => `${s()[key]}${sym}`).join(" ")}
-                </text>
-              )}
-            </Show>
+            <box flexDirection="row" flexShrink={0} gap={2}>
+              <Show when={phase()}>
+                {(p) => (
+                  <text wrapMode="none">
+                    <span style={{ fg: p().kind === "wait" ? feedback.warning.base : feedback.success.base }}>
+                      {GLYPH[p().kind]}
+                    </span>
+                    <span style={{ fg: ctx.theme.text.muted }}>
+                      {` ${p().tool ? `${p().tool} ` : ""}${fmt(p().elapsed)}`}
+                    </span>
+                  </text>
+                )}
+              </Show>
+              <Show when={input.showDetails !== false && stats()}>
+                {(s) => (
+                  <text wrapMode="none" fg={ctx.theme.text.muted}>
+                    {ROWS.map(([key, sym]) => `${s()[key]}${sym}`).join(" ")}
+                  </text>
+                )}
+              </Show>
+            </box>
           )
         },
       }),
@@ -131,6 +152,7 @@ export default {
     ]
 
     return () => {
+      phases.dispose()
       unslots.forEach((off) => off())
       offs.forEach((off) => off())
       timers.forEach(clearTimeout)

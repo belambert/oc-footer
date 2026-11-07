@@ -14,6 +14,20 @@ the prompt footer:
 
 A turn with two tool calls followed by a reply is three steps.
 
+While a run is active, a live indicator with elapsed time appears before the
+counts:
+
+    ✦ 4.2s  3↑ 6⟳ 3⚒ 6✦
+
+| Indicator     | Phase                                                |
+|---------------|------------------------------------------------------|
+| `◌ 1.2s`      | Waiting for the model (request sent, no output yet)  |
+| `✦ 4.2s`      | Thinking (streaming reasoning)                       |
+| `✎ 0.8s`      | Writing (streaming reply text)                       |
+| `⚒ read 2.1s` | Calling or running a tool                            |
+
+It's hidden when the session is idle and during retry backoff.
+
 When the sidebar is open, it also gets an "Activity" section with the same
 counts, labeled:
 
@@ -38,6 +52,9 @@ Restart OpenCode to load it.
 
 - `tui.tsx` appends to the `prompt.footer.status` slot (after the built-in
   status) and the `sidebar.content` slot; both read the same shared counts.
+- `phase.ts` tracks the live phase per session from step, text, reasoning,
+  tool, retry, and execution events, timed from each event's `created`
+  timestamp.
 - Full counts come from the message API (`type: "user"` and
   `type: "assistant"`, counting `tool` and `reasoning` content parts), paging
   through the full history, since the TUI's message store holds only the most
