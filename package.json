@@ -1,0 +1,7 @@
+{
+  "name": "oc-footer",
+  "version": "0.1.0",
+  "description": "OpenCode v2 TUI plugin that shows the session's turn and step counts in the prompt footer.",
+  "type": "module",
+  "license": "MIT"
+}
