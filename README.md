@@ -1,26 +1,10 @@
 # opencode-activity
 
-An OpenCode v2 TUI plugin that shows the current session's activity counts,
-and what the model is doing right now, in the prompt footer:
+An OpenCode v2 TUI plugin that shows what the model is doing right now in the
+prompt footer, and the current session's activity counts in the sidebar.
 
-<img src="docs/footer.png" width="976" alt="The footer through one run: waiting, thinking, running a glob tool, writing, then idle">
-
-*The footer through one run: waiting, thinking, running a tool, writing, and
-idle.*
-
-| Symbol | Count    | Meaning                                         |
-|--------|----------|-------------------------------------------------|
-| `↑`    | Turns    | Your messages                                   |
-| `⟳`    | Steps    | Model calls                                     |
-| `⚒`    | Tools    | Tool calls made by the model                    |
-| `✦`    | Thoughts | Reasoning blocks                                |
-
-A turn with two tool calls followed by a reply is three steps.
-
-While a run is active, a live indicator with elapsed time appears before the
-counts:
-
-    4.2s ✦  3↑ 6⟳ 3⚒ 6✦
+While a run is active, the footer shows the current phase and how long it has
+lasted:
 
 | Indicator     | Phase                                                |
 |---------------|------------------------------------------------------|
@@ -31,12 +15,20 @@ counts:
 
 It's hidden when the session is idle and during retry backoff.
 
-When the sidebar is open, it also gets an "Activity" section with the same
-counts, labeled:
+When the sidebar is open, it gets an "Activity" section with the counts:
 
 <img src="docs/sidebar.png" width="389" alt="Sidebar Activity section listing turns, steps, tools, and thoughts">
 
-Screenshots are tmux captures rendered to PNG; glyph shapes depend on your
+| Symbol | Count    | Meaning                                         |
+|--------|----------|-------------------------------------------------|
+| `↑`    | Turns    | Your messages                                   |
+| `⟳`    | Steps    | Model calls                                     |
+| `⚒`    | Tools    | Tool calls made by the model                    |
+| `✦`    | Thoughts | Reasoning blocks                                |
+
+A turn with two tool calls followed by a reply is three steps.
+
+The screenshot is a tmux capture rendered to PNG; glyph shapes depend on your
 terminal font.
 
 ## Install
@@ -71,8 +63,8 @@ To publish, bump `version` in `package.json` and run `npm publish`; the
 
 ## How It Works
 
-- `src/tui.tsx` appends to the `prompt.footer.status` slot (after the built-in
-  status) and the `sidebar.content` slot; both read the same shared counts.
+- `src/tui.tsx` appends the phase indicator to the `prompt.footer.status` slot
+  (after the built-in status) and the counts to the `sidebar.content` slot.
 - `src/server.ts` is a no-op server entry. Plugins listed in `opencode.json` are
   loaded by the server first, and one without a server entry never reaches
   the TUI.
