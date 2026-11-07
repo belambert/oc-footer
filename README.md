@@ -1,9 +1,12 @@
 # oc-footer
 
-An OpenCode v2 TUI plugin that shows the current session's activity counts in
-the prompt footer:
+An OpenCode v2 TUI plugin that shows the current session's activity counts,
+and what the model is doing right now, in the prompt footer:
 
-    /…/my-project  12↑ 47⟳ 31⚒ 18✦  8.9K (1%) · $0.02  ctrl+p commands
+<img src="docs/footer.png" width="976" alt="The footer through one run: waiting, thinking, running a glob tool, writing, then idle">
+
+*The footer through one run: waiting, thinking, running a tool, writing, and
+idle.*
 
 | Symbol | Count    | Meaning                                         |
 |--------|----------|-------------------------------------------------|
@@ -31,11 +34,10 @@ It's hidden when the session is idle and during retry backoff.
 When the sidebar is open, it also gets an "Activity" section with the same
 counts, labeled:
 
-    Activity
-    ↑ Turns         12
-    ⟳ Steps         47
-    ⚒ Tools         31
-    ✦ Thoughts      18
+<img src="docs/sidebar.png" width="389" alt="Sidebar Activity section listing turns, steps, tools, and thoughts">
+
+Screenshots are tmux captures rendered to PNG; glyph shapes depend on your
+terminal font.
 
 ## Install
 
