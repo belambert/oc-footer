@@ -15,7 +15,7 @@ type Ctx = {
   ui: { slot: (claim: { append: string; render: (input: Input) => unknown }) => () => void }
 }
 
-type Input = { sessionID?: string; showDetails?: boolean }
+type Input = { sessionID?: string }
 type Ev = { created?: number; data?: { sessionID?: string; name?: string; at?: number } }
 
 // live increments while a run streams; full recounts correct any drift
@@ -97,33 +97,23 @@ export default {
       ctx.ui.slot({
         append: "prompt.footer.status",
         render: (input) => {
-          const stats = watch(input)
           const phase = () => phases.get(input.sessionID)
           const { feedback } = ctx.theme.text
 
           return (
-            <box flexDirection="row" flexShrink={0} gap={2}>
-              <Show when={phase()}>
-                {(p) => (
-                  // glyph last: the footer is right-anchored, so it stays put as the text grows
-                  <text wrapMode="none">
-                    <span style={{ fg: ctx.theme.text.muted }}>
-                      {`${p().tool ? `${p().tool} ` : ""}${fmt(p().elapsed)} `}
-                    </span>
-                    <span style={{ fg: p().kind === "wait" ? feedback.warning.base : feedback.success.base }}>
-                      {GLYPH[p().kind]}
-                    </span>
-                  </text>
-                )}
-              </Show>
-              <Show when={input.showDetails !== false && stats()}>
-                {(s) => (
-                  <text wrapMode="none" fg={ctx.theme.text.muted}>
-                    {ROWS.map(([key, sym]) => `${s()[key]}${sym}`).join(" ")}
-                  </text>
-                )}
-              </Show>
-            </box>
+            <Show when={phase()}>
+              {(p) => (
+                // glyph last: the footer is right-anchored, so it stays put as the text grows
+                <text wrapMode="none" flexShrink={0}>
+                  <span style={{ fg: ctx.theme.text.muted }}>
+                    {`${p().tool ? `${p().tool} ` : ""}${fmt(p().elapsed)} `}
+                  </span>
+                  <span style={{ fg: p().kind === "wait" ? feedback.warning.base : feedback.success.base }}>
+                    {GLYPH[p().kind]}
+                  </span>
+                </text>
+              )}
+            </Show>
           )
         },
       }),
