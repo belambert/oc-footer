@@ -10,10 +10,10 @@ idle.*
 
 | Symbol | Count    | Meaning                                         |
 |--------|----------|-------------------------------------------------|
-| `↑`    | Turns    | Your prompts (user messages)                    |
-| `⟳`    | Steps    | Model calls (assistant messages)                |
+| `↑`    | Turns    | Your messges                                    |
+| `⟳`    | Steps    | Model calls                                     |
 | `⚒`    | Tools    | Tool calls made by the model                    |
-| `✦`    | Thoughts | Reasoning blocks (when the model emits them)    |
+| `✦`    | Thoughts | Reasoning blocks                                |
 
 A turn with two tool calls followed by a reply is three steps.
 
