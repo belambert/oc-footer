@@ -14,6 +14,15 @@ the prompt footer:
 
 A turn with two tool calls followed by a reply is three steps.
 
+When the sidebar is open, it also gets an "Activity" section with the same
+counts, labeled:
+
+    Activity
+    ↑ Turns         12
+    ⟳ Steps         47
+    ⚒ Tools         31
+    ✦ Thoughts      18
+
 ## Install
 
 OpenCode v2 discovers local TUI plugins as directories (or symlinks to
@@ -27,8 +36,8 @@ Restart OpenCode to load it.
 
 ## How It Works
 
-- `tui.tsx` claims the `prompt.footer.status` slot and renders the counts
-  after the built-in status.
+- `tui.tsx` appends to the `prompt.footer.status` slot (after the built-in
+  status) and the `sidebar.content` slot; both read the same shared counts.
 - Full counts come from the message API (`type: "user"` and
   `type: "assistant"`, counting `tool` and `reasoning` content parts), paging
   through the full history, since the TUI's message store holds only the most

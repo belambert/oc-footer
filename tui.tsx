@@ -7,7 +7,7 @@ type Msg = { content?: { type: string }[] }
 type Page = { data?: Msg[]; cursor?: { next?: string | null } }
 
 type Ctx = {
-  theme: { text: { muted: unknown } }
+  theme: { text: { base: unknown; muted: unknown } }
   client: { message: { list: (q: Record<string, unknown>) => Promise<Page> } }
   data: { on: (type: string, fn: (e: { data?: { sessionID?: string } }) => void) => () => void }
   ui: { slot: (claim: { append: string; render: (input: Input) => unknown }) => () => void }
@@ -29,6 +29,13 @@ const RESYNC = [
   "session.execution.interrupted",
   "session.revert.committed",
   "session.compaction.ended",
+]
+
+const ROWS: [keyof Counts, string, string][] = [
+  ["turns", "↑", "Turns"],
+  ["steps", "⟳", "Steps"],
+  ["tools", "⚒", "Tools"],
+  ["thoughts", "✦", "Thoughts"],
 ]
 
 const PAGE = 200
@@ -76,26 +83,55 @@ export default {
       ...RESYNC.map((type) => ctx.data.on(type, tracked(schedule))),
     ]
 
-    const unslot = ctx.ui.slot({
-      append: "prompt.footer.status",
-      render: (input) => {
-        createEffect(on(() => input.sessionID, (id) => id && !(id in counts()) && void refresh(id)))
-        const stats = () => (input.sessionID ? counts()[input.sessionID] : undefined)
+    // reactive counts for a slot's session, loading them on first display
+    const watch = (input: Input) => {
+      createEffect(on(() => input.sessionID, (id) => id && !(id in counts()) && void refresh(id)))
+      return () => (input.sessionID ? counts()[input.sessionID] : undefined)
+    }
 
-        return (
-          <Show when={input.showDetails !== false && stats()}>
-            {(s) => (
-              <text flexShrink={0} wrapMode="none" fg={ctx.theme.text.muted}>
-                {`${s().turns}↑ ${s().steps}⟳ ${s().tools}⚒ ${s().thoughts}✦`}
-              </text>
-            )}
-          </Show>
-        )
-      },
-    })
+    const unslots = [
+      ctx.ui.slot({
+        append: "prompt.footer.status",
+        render: (input) => {
+          const stats = watch(input)
+          return (
+            <Show when={input.showDetails !== false && stats()}>
+              {(s) => (
+                <text flexShrink={0} wrapMode="none" fg={ctx.theme.text.muted}>
+                  {ROWS.map(([key, sym]) => `${s()[key]}${sym}`).join(" ")}
+                </text>
+              )}
+            </Show>
+          )
+        },
+      }),
+      ctx.ui.slot({
+        append: "sidebar.content",
+        render: (input) => {
+          const stats = watch(input)
+          return (
+            <Show when={stats()}>
+              {(s) => (
+                <box>
+                  <text fg={ctx.theme.text.base}>
+                    <b>Activity</b>
+                  </text>
+                  {ROWS.map(([key, sym, name]) => (
+                    <box flexDirection="row" justifyContent="space-between">
+                      <text fg={ctx.theme.text.muted}>{`${sym} ${name}`}</text>
+                      <text fg={ctx.theme.text.muted}>{String(s()[key])}</text>
+                    </box>
+                  ))}
+                </box>
+              )}
+            </Show>
+          )
+        },
+      }),
+    ]
 
     return () => {
-      unslot()
+      unslots.forEach((off) => off())
       offs.forEach((off) => off())
       timers.forEach(clearTimeout)
     }
