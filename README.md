@@ -64,8 +64,17 @@ under `~/.config/opencode/plugins/` or `<project>/.opencode/plugins/` without
 any config entry. Use one method, not both: the paths differ, so the plugin
 would load twice.
 
-To publish, bump `version` in `package.json` and run `npm publish`; the
-`prepublishOnly` script rebuilds `dist/` first.
+## Releasing
+
+Bump `version` in `package.json`, merge it to `main`, then push a matching
+tag:
+
+    git tag v0.1.1
+    git push origin v0.1.1
+
+The `publish` workflow builds `dist/` and publishes to npm through trusted
+publishing, so no npm token is stored in the repo. It fails if the tag doesn't
+match the package version.
 
 ## How It Works
 
