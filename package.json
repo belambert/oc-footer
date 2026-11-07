@@ -12,6 +12,8 @@
   ],
   "scripts": {
     "build": "bun build.ts",
+    "lint": "prettier --check src build.ts && tsc -p .",
+    "format": "prettier --write src build.ts",
     "prepublishOnly": "bun run build"
   },
   "keywords": [
@@ -32,6 +34,9 @@
   "devDependencies": {
     "@opentui/core": "^0.8.3",
     "@opentui/solid": "^0.8.3",
-    "solid-js": "^1.9.18"
+    "@types/bun": "^1.4.4",
+    "prettier": "^3.9.10",
+    "solid-js": "^1.9.18",
+    "typescript": "^7.0.2"
   }
 }
