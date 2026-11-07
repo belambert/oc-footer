@@ -27,8 +27,8 @@ OpenCode's "Context" section:
 
 | Symbol | Count    | Meaning                                         |
 |--------|----------|-------------------------------------------------|
-| `↑`    | Turns    | Your messages                                   |
-| `⟳`    | Steps    | Model calls                                     |
+| `⏎`    | Turns    | Your messages                                   |
+| `↻`    | Steps    | Model calls                                     |
 | `⚒`    | Tools    | Tool calls made by the model                    |
 | `✦`    | Thoughts | Reasoning blocks                                |
 
