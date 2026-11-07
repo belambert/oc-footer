@@ -12,8 +12,9 @@
   ],
   "scripts": {
     "build": "bun build.ts",
-    "lint": "prettier --check src build.ts && tsc -p .",
-    "format": "prettier --write src build.ts",
+    "lint": "prettier --check src tests build.ts && tsc -p .",
+    "format": "prettier --write src tests build.ts",
+    "test": "bun test",
     "prepublishOnly": "bun run build"
   },
   "keywords": [
