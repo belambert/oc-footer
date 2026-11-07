@@ -64,6 +64,10 @@ under `~/.config/opencode/plugins/` or `<project>/.opencode/plugins/` without
 any config entry. Use one method, not both: the paths differ, so the plugin
 would load twice.
 
+`bun run lint` checks formatting (Prettier) and types (TypeScript), and
+`bun run format` fixes formatting. CI runs lint and build on every push to
+`main` and on PRs.
+
 ## Releasing
 
 Bump `version` in `package.json`, merge it to `main`, then publish a GitHub
