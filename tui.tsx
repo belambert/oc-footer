@@ -1,9 +1,10 @@
 /** @jsxImportSource @opentui/solid */
 import { createEffect, createSignal, on, Show } from "solid-js"
 
-type Counts = { turns: number; steps: number }
+type Counts = { turns: number; steps: number; tools: number; thoughts: number }
 
-type Page = { data?: unknown[]; cursor?: { next?: string | null } }
+type Msg = { content?: { type: string }[] }
+type Page = { data?: Msg[]; cursor?: { next?: string | null } }
 
 type Ctx = {
   theme: { text: { muted: unknown } }
@@ -14,14 +15,20 @@ type Ctx = {
 
 type Input = { sessionID?: string; showDetails?: boolean }
 
-// events after which a session's message counts may have changed
-const EVENTS = [
-  "session.step.started",
-  "session.step.ended",
+// live increments while a run streams; full recounts correct any drift
+const BUMPS: Record<string, keyof Counts> = {
+  "session.step.started": "steps",
+  "session.tool.input.started": "tools",
+  "session.reasoning.started": "thoughts",
+}
+
+const RESYNC = [
+  "session.execution.started",
   "session.execution.succeeded",
   "session.execution.failed",
   "session.execution.interrupted",
   "session.revert.committed",
+  "session.compaction.ended",
 ]
 
 const PAGE = 200
@@ -33,32 +40,41 @@ export default {
     const [counts, setCounts] = createSignal<Record<string, Counts>>({})
     const timers = new Map<string, ReturnType<typeof setTimeout>>()
 
-    const refresh = async (sessionID: string) => {
-      const [turns, steps] = await Promise.all([
-        count(ctx, sessionID, "user"),
-        count(ctx, sessionID, "assistant"),
-      ])
-      setCounts((c) => ({ ...c, [sessionID]: { turns, steps } }))
+    const refresh = async (id: string) => {
+      const [users, steps] = await Promise.all([fetchAll(ctx, id, "user"), fetchAll(ctx, id, "assistant")])
+      const parts = steps.flatMap((m) => m.content ?? [])
+      const n = (type: string) => parts.filter((p) => p.type === type).length
+      setCounts((c) => ({
+        ...c,
+        [id]: { turns: users.length, steps: steps.length, tools: n("tool"), thoughts: n("reasoning") },
+      }))
     }
 
     // coalesce bursts of events into one recount per session
-    const schedule = (sessionID: string) => {
-      clearTimeout(timers.get(sessionID))
+    const schedule = (id: string) => {
+      clearTimeout(timers.get(id))
       timers.set(
-        sessionID,
+        id,
         setTimeout(() => {
-          timers.delete(sessionID)
-          void refresh(sessionID)
+          timers.delete(id)
+          void refresh(id)
         }, DEBOUNCE_MS),
       )
     }
 
-    const offs = EVENTS.map((type) =>
-      ctx.data.on(type, (e) => {
-        const id = e.data?.sessionID
-        if (id && id in counts()) schedule(id)
-      }),
-    )
+    const bump = (id: string, key: keyof Counts) =>
+      setCounts((c) => ({ ...c, [id]: { ...c[id], [key]: c[id][key] + 1 } }))
+
+    // only track sessions that have been displayed
+    const tracked = (fn: (id: string) => void) => (e: { data?: { sessionID?: string } }) => {
+      const id = e.data?.sessionID
+      if (id && id in counts()) fn(id)
+    }
+
+    const offs = [
+      ...Object.entries(BUMPS).map(([type, key]) => ctx.data.on(type, tracked((id) => bump(id, key)))),
+      ...RESYNC.map((type) => ctx.data.on(type, tracked(schedule))),
+    ]
 
     const unslot = ctx.ui.slot({
       append: "prompt.footer.status",
@@ -70,7 +86,7 @@ export default {
           <Show when={input.showDetails !== false && stats()}>
             {(s) => (
               <text flexShrink={0} wrapMode="none" fg={ctx.theme.text.muted}>
-                {label(s().turns, "turn")} · {label(s().steps, "step")}
+                {`${s().turns}↑ ${s().steps}⟳ ${s().tools}⚒ ${s().thoughts}✦`}
               </text>
             )}
           </Show>
@@ -86,9 +102,9 @@ export default {
   },
 }
 
-/** Count all messages of one type in a session, paging through the full history. */
-async function count(ctx: Ctx, sessionID: string, type: string) {
-  let n = 0
+/** Fetch every message of one type in a session, paging through the full history. */
+async function fetchAll(ctx: Ctx, sessionID: string, type: string) {
+  const rows: Msg[] = []
   let cursor: string | undefined
   while (true) {
     const page = await ctx.client.message.list({
@@ -97,11 +113,9 @@ async function count(ctx: Ctx, sessionID: string, type: string) {
       limit: PAGE,
       ...(cursor ? { cursor } : { order: "asc" }),
     })
-    const rows = page.data ?? []
-    n += rows.length
+    const data = page.data ?? []
+    rows.push(...data)
     cursor = page.cursor?.next ?? undefined
-    if (!cursor || rows.length < PAGE) return n
+    if (!cursor || data.length < PAGE) return rows
   }
 }
-
-const label = (n: number, unit: string) => `${n} ${unit}${n === 1 ? "" : "s"}`

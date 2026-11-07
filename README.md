@@ -1,12 +1,18 @@
 # oc-footer
 
-An OpenCode v2 TUI plugin that shows the current session's turn and step
-counts in the prompt footer:
+An OpenCode v2 TUI plugin that shows the current session's activity counts in
+the prompt footer:
 
-    /…/my-project  12 turns · 47 steps  8.9K (1%) · $0.02  ctrl+p commands
+    /…/my-project  12↑ 47⟳ 31⚒ 18✦  8.9K (1%) · $0.02  ctrl+p commands
 
-A *turn* is a user message and a *step* is an assistant message (one model
-call), so a turn with two tool calls followed by a reply is three steps.
+| Symbol | Count    | Meaning                                         |
+|--------|----------|-------------------------------------------------|
+| `↑`    | Turns    | Your prompts (user messages)                    |
+| `⟳`    | Steps    | Model calls (assistant messages)                |
+| `⚒`    | Tools    | Tool calls made by the model                    |
+| `✦`    | Thoughts | Reasoning blocks (when the model emits them)    |
+
+A turn with two tool calls followed by a reply is three steps.
 
 ## Install
 
@@ -23,11 +29,13 @@ Restart OpenCode to load it.
 
 - `tui.tsx` claims the `prompt.footer.status` slot and renders the counts
   after the built-in status.
-- Counts come from the message API (`type: "user"` and `type: "assistant"`),
-  paging through the full history, since the TUI's message store holds only
-  the most recent messages.
-- The counts refresh (debounced) on step, execution, and revert events for
-  sessions that have been displayed.
+- Full counts come from the message API (`type: "user"` and
+  `type: "assistant"`, counting `tool` and `reasoning` content parts), paging
+  through the full history, since the TUI's message store holds only the most
+  recent messages.
+- While a run streams, step, tool, and reasoning events bump the counts
+  directly; a full recount (debounced) runs when a run starts or ends, and
+  after reverts and compactions.
 - OpenCode applies the Solid JSX transform to plugin files outside
   `node_modules`, so the `.tsx` source loads directly with no build step.
   Publishing to npm would require pre-bundling, as files under `node_modules`
