@@ -65,8 +65,10 @@ any config entry. Use one method, not both: the paths differ, so the plugin
 would load twice.
 
 `bun run lint` checks formatting (Prettier) and types (TypeScript), and
-`bun run format` fixes formatting. CI runs lint and build on every push to
-`main` and on PRs.
+`bun run format` fixes formatting. `bun test` runs the unit tests in `tests/`,
+which drive the phase and count trackers with a fake event bus and message
+API. On every push to `main` and on PRs, CI runs two workflows: `lint`, and
+`test`, which also checks that the build produces the `dist/` entry points.
 
 ## Releasing
 
@@ -89,7 +91,8 @@ repo. It fails if the tag doesn't match the package version.
 - `src/phase.ts` tracks the live phase per session from step, text, reasoning,
   tool, retry, and execution events, timed from each event's `created`
   timestamp.
-- Full counts come from the message API (`type: "user"` and
+- `src/counts.ts` keeps the per-session counts. Full counts come from the
+  message API (`type: "user"` and
   `type: "assistant"`, counting `tool` and `reasoning` content parts), paging
   through the full history, since the TUI's message store holds only the most
   recent messages.
