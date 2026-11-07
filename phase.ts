@@ -24,6 +24,8 @@ export function trackPhases(on: On) {
   let tick: ReturnType<typeof setInterval> | undefined
 
   const set = (id: string, p?: Phase) => {
+    // refresh the clock first so a fresh phase never looks future-dated (hidden)
+    setNow(Date.now())
     setLive(({ [id]: _, ...rest }) => (p ? { ...rest, [id]: p } : rest))
 
     // tick the clock only while some session is active
@@ -39,7 +41,8 @@ export function trackPhases(on: On) {
   const enter = (kind: Kind) => (e: Ev) => {
     const id = e.data?.sessionID
     if (!id || (kind !== "tool" && live()[id]?.kind === kind)) return
-    set(id, { kind, since: e.created ?? Date.now(), tool: kind === "tool" ? e.data?.name : undefined })
+    const since = Math.min(e.created ?? Infinity, Date.now())
+    set(id, { kind, since, tool: kind === "tool" ? e.data?.name : undefined })
   }
 
   const wait = enter("wait")
