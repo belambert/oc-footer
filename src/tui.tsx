@@ -89,7 +89,17 @@ export default {
 
     // reactive counts for a slot's session, loading them on first display
     const watch = (input: Input) => {
-      createEffect(on(() => input.sessionID, (id) => id && !(id in counts()) && void refresh(id)))
+      createEffect(
+        on(
+          () => input.sessionID,
+          (id) => {
+            if (!id || id in counts()) return
+            // start at zero so live events and resyncs apply even if this first load fails
+            setCounts((c) => ({ ...c, [id]: { turns: 0, steps: 0, tools: 0, thoughts: 0 } }))
+            void refresh(id)
+          },
+        ),
+      )
       return () => (input.sessionID ? counts()[input.sessionID] : undefined)
     }
 
