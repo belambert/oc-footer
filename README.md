@@ -10,10 +10,10 @@ idle.*
 
 | Symbol | Count    | Meaning                                         |
 |--------|----------|-------------------------------------------------|
-| `↑`    | Turns    | Your prompts (user messages)                    |
-| `⟳`    | Steps    | Model calls (assistant messages)                |
+| `↑`    | Turns    | Your messges                                    |
+| `⟳`    | Steps    | Model calls                                     |
 | `⚒`    | Tools    | Tool calls made by the model                    |
-| `✦`    | Thoughts | Reasoning blocks (when the model emits them)    |
+| `✦`    | Thoughts | Reasoning blocks                                |
 
 A turn with two tool calls followed by a reply is three steps.
 
@@ -41,8 +41,19 @@ terminal font.
 
 ## Install
 
-Add the repo's absolute path to the `plugins` array in
-`~/.config/opencode/opencode.json`:
+    opencode plugin add opencode-activity
+
+Restart OpenCode to load it.
+
+## Development
+
+Build the bundle into `dist/`, which the package's `exports` point at:
+
+    bun install
+    bun run build
+
+Then add the repo's absolute path to the `plugins` array in
+`~/.config/opencode/opencode.json`, and rebuild after each change:
 
 ```json
 {
@@ -53,16 +64,19 @@ Add the repo's absolute path to the `plugins` array in
 Alternatively, OpenCode discovers directories (or symlinks to directories)
 under `~/.config/opencode/plugins/` or `<project>/.opencode/plugins/` without
 any config entry. Use one method, not both: the paths differ, so the plugin
-would load twice. Restart OpenCode to load it.
+would load twice.
+
+To publish, bump `version` in `package.json` and run `npm publish`; the
+`prepublishOnly` script rebuilds `dist/` first.
 
 ## How It Works
 
-- `tui.tsx` appends to the `prompt.footer.status` slot (after the built-in
+- `src/tui.tsx` appends to the `prompt.footer.status` slot (after the built-in
   status) and the `sidebar.content` slot; both read the same shared counts.
-- `server.ts` is a no-op server entry. Plugins listed in `opencode.json` are
+- `src/server.ts` is a no-op server entry. Plugins listed in `opencode.json` are
   loaded by the server first, and one without a server entry never reaches
   the TUI.
-- `phase.ts` tracks the live phase per session from step, text, reasoning,
+- `src/phase.ts` tracks the live phase per session from step, text, reasoning,
   tool, retry, and execution events, timed from each event's `created`
   timestamp.
 - Full counts come from the message API (`type: "user"` and
@@ -72,9 +86,9 @@ would load twice. Restart OpenCode to load it.
 - While a run streams, step, tool, and reasoning events bump the counts
   directly; a full recount (debounced) runs when a run starts or ends, and
   after reverts and compactions.
-- OpenCode applies the Solid JSX transform to plugin files outside
-  `node_modules`, so the `.tsx` source loads directly with no build step.
-  Publishing to npm would require pre-bundling, as files under `node_modules`
-  are not transformed.
+- OpenCode applies the Solid JSX transform only to plugin files outside
+  `node_modules`, so an installed package must ship compiled JS. `build.ts`
+  bundles `src/` with OpenTUI's Solid plugin, leaving `solid-js` and
+  `@opentui/*` external so they resolve to OpenCode's own runtime.
 
 Tested with OpenCode 2.2.6.
