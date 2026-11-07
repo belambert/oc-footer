@@ -21,7 +21,7 @@ const EVENTS = [
   "session.execution.succeeded",
   "session.execution.failed",
   "session.execution.interrupted",
-  "session.revert.commit",
+  "session.revert.committed",
 ]
 
 const PAGE = 200
