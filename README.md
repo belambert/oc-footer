@@ -6,7 +6,10 @@ prompt footer, and the current session's activity counts in the sidebar.
 While a run is active, the footer shows the current phase and how long it has
 lasted, just before OpenCode's context size:
 
-<img src="docs/footer.png" width="231" alt="Footer indicator while waiting, thinking, running a read tool, and writing, each next to the context size">
+<img src="docs/footer.png" width="771" alt="The footer through one run: waiting, thinking, running a read tool, writing, then idle, each with the context size">
+
+*The footer through one run: waiting, thinking, running a tool, writing, and
+idle.*
 
 | Indicator     | Phase                                                |
 |---------------|------------------------------------------------------|
