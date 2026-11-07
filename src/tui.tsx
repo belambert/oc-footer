@@ -45,7 +45,7 @@ const PAGE = 200
 const DEBOUNCE_MS = 250
 
 export default {
-  id: "opencode-activity",
+  id: "opencode-livetrace",
   setup(ctx: Ctx) {
     const [counts, setCounts] = createSignal<Record<string, Counts>>({})
     const timers = new Map<string, ReturnType<typeof setTimeout>>()
