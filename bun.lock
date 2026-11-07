@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "opencode-activity",
+      "name": "opencode-livetrace",
       "devDependencies": {
         "@opentui/core": "^0.8.3",
         "@opentui/solid": "^0.8.3",

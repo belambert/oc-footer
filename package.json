@@ -1,5 +1,5 @@
 {
-  "name": "opencode-activity",
+  "name": "opencode-livetrace",
   "version": "0.1.0",
   "description": "OpenCode v2 TUI plugin that shows session activity counts and a live phase indicator in the footer and sidebar.",
   "type": "module",
@@ -23,11 +23,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/belambert/opencode-activity.git"
+    "url": "git+https://github.com/belambert/opencode-livetrace.git"
   },
-  "homepage": "https://github.com/belambert/opencode-activity#readme",
+  "homepage": "https://github.com/belambert/opencode-livetrace#readme",
   "bugs": {
-    "url": "https://github.com/belambert/opencode-activity/issues"
+    "url": "https://github.com/belambert/opencode-livetrace/issues"
   },
   "devDependencies": {
     "@opentui/core": "^0.8.3",

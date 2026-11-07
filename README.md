@@ -1,4 +1,4 @@
-# opencode-activity
+# opencode-livetrace
 
 An OpenCode v2 TUI plugin that shows what the model is doing right now in the
 prompt footer, and the current session's activity counts in the sidebar.
@@ -39,7 +39,7 @@ terminal font.
 
 ## Install
 
-    opencode plugin add opencode-activity
+    opencode plugin add opencode-livetrace
 
 Restart OpenCode to load it.
 
@@ -55,7 +55,7 @@ Then add the repo's absolute path to the `plugins` array in
 
 ```json
 {
-  "plugins": ["/path/to/opencode-activity"]
+  "plugins": ["/path/to/opencode-livetrace"]
 }
 ```
 
