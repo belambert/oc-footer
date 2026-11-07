@@ -1,4 +1,4 @@
-name: build
+name: test
 
 on:
   push:
@@ -9,13 +9,13 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - run: bun test
       - run: bun run build
       # the package's exports point here, so a missing file means a broken install
       - run: test -s dist/server.js && test -s dist/tui.js
-      - run: npm pack --dry-run
