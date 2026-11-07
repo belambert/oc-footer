@@ -1,4 +1,4 @@
-# oc-footer
+# opencode-activity
 
 An OpenCode v2 TUI plugin that shows the current session's activity counts,
 and what the model is doing right now, in the prompt footer:
@@ -46,7 +46,7 @@ Add the repo's absolute path to the `plugins` array in
 
 ```json
 {
-  "plugins": ["/path/to/oc-footer"]
+  "plugins": ["/path/to/opencode-activity"]
 }
 ```
 
